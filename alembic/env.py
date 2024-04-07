@@ -19,6 +19,10 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from vendingmachine.common.database import Base, get_db_url  # noqa
 
+# import all models
+from vendingmachine.user.models import *  # noqa
+from vendingmachine.product.models import *  # noqa
+
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
