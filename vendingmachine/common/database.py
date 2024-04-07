@@ -1,9 +1,11 @@
-from sqlalchemy import create_engine, Column, Integer, DateTime
+from datetime import datetime
+
+from sqlalchemy import Column, DateTime, Integer, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from vendingmachine.settings import get_settings, Settings
 from sqlalchemy.sql import func
-from datetime import datetime
+
+from vendingmachine.settings import Settings, get_settings
 
 
 def get_db_url(settings: Settings = get_settings()):

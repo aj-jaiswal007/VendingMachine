@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends
 from typing import Annotated
-from vendingmachine.settings import Settings, get_settings
+
+from fastapi import APIRouter, Depends
+
 from vendingmachine.common.logger import logger
+from vendingmachine.settings import Settings, get_settings
 
 router = APIRouter()
 

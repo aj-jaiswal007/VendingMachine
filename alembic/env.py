@@ -1,6 +1,6 @@
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
@@ -18,10 +18,10 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from vendingmachine.common.database import Base, get_db_url  # noqa
-
-# import all models
-from vendingmachine.user.models import *  # noqa
 from vendingmachine.product.models import *  # noqa
+
+# import all models so it's discoverable by Alembic
+from vendingmachine.user.models import *  # noqa
 
 target_metadata = Base.metadata
 

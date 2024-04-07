@@ -1,6 +1,9 @@
+from typing import Optional
+
 from pydantic import BaseModel
-from vendingmachine.user.enums import RoleName
+
 from vendingmachine.common.database import AuditBase
+from vendingmachine.user.enums import RoleName
 
 
 class UserBase(BaseModel):
@@ -15,6 +18,21 @@ class UserCreate(UserBase):
 
 
 class User(UserBase, AuditBase):
-
     class Config:
         orm_mode = True
+        from_attributes = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    role: Optional[RoleName] = None
+
+
+class Credentials(BaseModel):
+    username: str
+    password: str

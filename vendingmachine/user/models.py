@@ -1,5 +1,6 @@
+from sqlalchemy import Boolean, Column, Enum, String
+
 from vendingmachine.common.database import AuditMixin, Base
-from sqlalchemy import Column, String, Boolean, Enum
 from vendingmachine.user.enums import RoleName
 
 

@@ -1,5 +1,6 @@
+from sqlalchemy import Column, Float, ForeignKey, Integer, String
+
 from vendingmachine.common.database import AuditMixin, Base
-from sqlalchemy import Column, Integer, ForeignKey, String, Float
 
 
 class Product(AuditMixin, Base):

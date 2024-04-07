@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
+
 from . import models, schemas
-from vendingmachine.common.utils import get_password_hash
+from .authentication import get_password_hash
 
 
 def get_all_users(db: Session):
@@ -21,7 +22,4 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 def is_user_exists(db: Session, username: str):
-    return (
-        db.query(models.User).filter(models.User.username == username).first()
-        is not None
-    )
+    return db.query(models.User).filter(models.User.username == username).first() is not None
