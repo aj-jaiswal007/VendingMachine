@@ -11,6 +11,7 @@ from vendingmachine.common.database import get_db
 from vendingmachine.settings import get_settings
 
 from . import models, schemas
+from .enums import RoleName
 
 settings = get_settings()
 
@@ -48,10 +49,7 @@ def authenticate_user(db: Session, username: str, password: str):
     return user
 
 
-def get_current_user(
-    db: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-):
+def get_current_user_token(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -60,12 +58,24 @@ def get_current_user(
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         username: str = payload["sub"]
+        roles: list[RoleName] = [RoleName(item) for item in payload.get("roles", [])]
         if username is None:
             raise credentials_exception
-        token_data = schemas.TokenData(username=username)
+
+        return schemas.TokenData(username=username, roles=roles)
     except JWTError:
         raise credentials_exception
 
+
+def get_current_user(
+    db: Annotated[Session, Depends(get_db)],
+    token_data: Annotated[schemas.TokenData, Depends(get_current_user_token)],
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     user = db.query(models.User).filter(models.User.username == token_data.username).first()
     if user is None:
         raise credentials_exception
@@ -76,6 +86,6 @@ def get_current_active_user(
     current_user: Annotated[models.User, Depends(get_current_user)],
 ):
     if not current_user.is_active:  # type: ignore
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
 
     return current_user

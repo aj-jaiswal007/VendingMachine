@@ -10,11 +10,15 @@ class UserBase(BaseModel):
     first_name: str
     last_name: str
     username: str
-    role: RoleName = RoleName.BUYER
 
 
 class UserCreate(UserBase):
     password: str
+
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str]
+    last_name: Optional[str]
 
 
 class User(UserBase, AuditBase):
@@ -30,7 +34,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
-    role: Optional[RoleName] = None
+    roles: list[RoleName]
 
 
 class Credentials(BaseModel):
