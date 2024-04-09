@@ -23,7 +23,6 @@ class UserUpdate(BaseModel):
 
 class User(UserBase, AuditBase):
     class Config:
-        orm_mode = True
         from_attributes = True
 
 

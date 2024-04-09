@@ -8,13 +8,14 @@ from vendingmachine.common.database import get_db
 from vendingmachine.common.logger import logger
 from vendingmachine.settings import Settings, get_settings
 
-from . import crud, models, schemas
+from . import models, schemas
 from .authentication import (
     authenticate_user,
     create_access_token,
     get_current_active_user,
 )
 from .enums import RoleName
+from .manager import UserManager
 
 public_routes = APIRouter()
 authenticated_routes = APIRouter(
@@ -50,9 +51,9 @@ def login_for_access_token(
 
 
 @public_routes.post("/users/")
-def create_user(user: schemas.UserCreate, db: Annotated[Session, Depends(get_db)]):
+def create_user(user: schemas.UserCreate, user_manager: Annotated[UserManager, Depends(UserManager)]):
 
-    existing_user = crud.get_user(db, user.username)
+    existing_user = user_manager.get_user(user.username)
     if existing_user is not None:
         if existing_user.is_active:  # type: ignore
             msg = "User already exists! Use a different username."
@@ -60,10 +61,10 @@ def create_user(user: schemas.UserCreate, db: Annotated[Session, Depends(get_db)
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=msg)
 
         existing_user.is_active = True  # type: ignore
-        db.commit()
+        user_manager.db.commit()
         return schemas.User.model_validate(existing_user)
 
-    return schemas.User.model_validate(crud.create_user(db, user))
+    return schemas.User.model_validate(user_manager.create_user(user))
 
 
 @authenticated_routes.get("/users/me")
@@ -75,9 +76,9 @@ def get_user(current_user: Annotated[models.User, Depends(get_current_active_use
 def update_user(
     user_data: schemas.UserUpdate,
     current_user: Annotated[models.User, Depends(get_current_active_user)],
-    db: Annotated[Session, Depends(get_db)],
+    user_manager: Annotated[UserManager, Depends(UserManager)],
 ):
-    return schemas.User.model_validate(crud.update_user(db, current_user, user_data))
+    return schemas.User.model_validate(user_manager.update_user(current_user, user_data))
 
 
 @authenticated_routes.delete("/users/me")
