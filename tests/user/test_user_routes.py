@@ -131,4 +131,4 @@ class TestUserRoutes(BaseTestCase):
         assert response.status_code == 200
 
         user = session.query(User).filter(User.username == "jane.doe").first()
-        assert not user.is_active, "User should be inactive"
+        assert not user.is_active, "User should be inactive"  # type: ignore
