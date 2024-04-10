@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from vendingmachine.user import models as user_models
+from vendingmachine.user import models as models
 from vendingmachine.user.authentication import get_current_active_user
 from vendingmachine.user.permission import allow_seller
 
@@ -28,7 +28,7 @@ def get_product(product_id: int, product_manager: Annotated[ProductManager, Depe
 @authenticated_routes.post("/products", dependencies=[Depends(allow_seller)])
 def create_product(
     product: schemas.CreateProduct,
-    current_user: Annotated[user_models.User, Depends(get_current_active_user)],
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
     product_manager: Annotated[ProductManager, Depends(ProductManager)],
 ):
     return product_manager.create_product(product=product, created_by=current_user.id)  # type: ignore
@@ -39,7 +39,7 @@ def update_product(
     product_id: int,
     product: schemas.UpdateProduct,
     product_manager: Annotated[ProductManager, Depends(ProductManager)],
-    current_user: Annotated[user_models.User, Depends(get_current_active_user)],
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
 ):
     return product_manager.update_product(
         current_user=current_user,
@@ -52,7 +52,7 @@ def update_product(
 def delete_product(
     product_id: int,
     product_manager: Annotated[ProductManager, Depends(ProductManager)],
-    current_user: Annotated[user_models.User, Depends(get_current_active_user)],
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
 ):
     return product_manager.delete_product(
         current_user=current_user,

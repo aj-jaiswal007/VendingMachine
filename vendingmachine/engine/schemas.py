@@ -1,12 +1,9 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from .enums import CoinType
 from .exceptions import InvalidOperation
-
-
-class BuyResponse(BaseModel):
-    message: str
-    change: int
 
 
 class ChangeResponse(BaseModel):
@@ -35,7 +32,7 @@ class CoinCount(BaseModel):
     def total(self):
         return self.five * 5 + self.ten * 10 + self.twenty * 20 + self.fifty * 50 + self.hundred * 100
 
-    def add_cash(self, coin_type: CoinType, quantity: int):
+    def add_coin(self, coin_type: CoinType, quantity: int):
         if coin_type == CoinType.FIVE:
             self.five += quantity
         elif coin_type == CoinType.TEN:
@@ -49,6 +46,67 @@ class CoinCount(BaseModel):
         else:
             raise InvalidOperation("Invalid coin type")
 
+    def add_coins(self, coins: "CoinCount"):
+        self.five += coins.five
+        self.ten += coins.ten
+        self.twenty += coins.twenty
+        self.fifty += coins.fifty
+        self.hundred += coins.hundred
+
+    def remove_coins(self, coins: "CoinCount"):
+        self.five -= coins.five
+        self.ten -= coins.ten
+        self.twenty -= coins.twenty
+        self.fifty -= coins.fifty
+        self.hundred -= coins.hundred
+
+    def get_denomination_for_amount(self, amount: int) -> "CoinCount":
+        hundred_count = self.hundred
+        fifty_count = self.fifty
+        twenty_count = self.twenty
+        ten_count = self.ten
+        five_count = self.five
+
+        denomination = CoinCount()
+        # Greedy algorithm to get the denomination
+        # Raise InsufficientFunds if not possible
+        while amount > 0:
+            if amount >= 100 and hundred_count > 0:
+                amount -= 100
+                hundred_count -= 1
+                denomination.hundred += 1
+            elif amount >= 50 and fifty_count > 0:
+                amount -= 50
+                fifty_count -= 1
+                denomination.fifty += 1
+            elif amount >= 20 and twenty_count > 0:
+                amount -= 20
+                twenty_count -= 1
+                denomination.twenty += 1
+            elif amount >= 10 and ten_count > 0:
+                amount -= 10
+                ten_count -= 1
+                denomination.ten += 1
+            elif amount >= 5 and five_count > 0:
+                amount -= 5
+                five_count -= 1
+                denomination.five += 1
+            else:
+                raise InvalidOperation("Insufficient funds to return change.")
+
+        return denomination
+
+    def check_if_change_possible(self, amount: int) -> bool:
+        if self.total < amount:
+            return False
+
+        try:
+            self.get_denomination_for_amount(amount)
+        except InvalidOperation:
+            return False
+
+        return True
+
 
 class DepositResponse(DepositRequest):
     message: str
@@ -57,4 +115,12 @@ class DepositResponse(DepositRequest):
 
 class ResetResponse(BaseModel):
     message: str
-    coins_to_dispense: CoinCount
+    change: CoinCount
+
+
+class BuyResponse(BaseModel):
+    message: str
+    deposited: CoinCount
+    spent: int
+    change: Optional[CoinCount]
+    products: BuyRequest

@@ -70,3 +70,8 @@ class ProductManager(BaseManager):
         self.db.delete(db_product)
         self.db.commit()
         return db_product
+
+    def reduce_product_inventory(self, product_id: int, quantity: int):
+        inventory = self.db.query(models.Inventory).filter(models.Inventory.product_id == product_id).first()
+        inventory.quantity -= quantity  # type: ignore
+        self.db.commit()
