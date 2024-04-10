@@ -46,6 +46,7 @@ class ProductManager(BaseManager):
         product: schemas.UpdateProduct,
     ):
         db_product = self.get_product(product_id)
+        inventory = self.db.query(models.Inventory).filter(models.Inventory.product_id == product_id).first()
         if db_product.created_by != current_user.id:
             raise HTTPException(
                 status_code=403,
@@ -55,15 +56,14 @@ class ProductManager(BaseManager):
         for key, value in product.model_dump().items():
             if value is not None:
                 if key == "inventory_count":
-                    inventory = (
-                        self.db.query(models.Inventory).filter(models.Inventory.product_id == product_id).first()
-                    )
                     inventory.quantity = value  # type: ignore
                 else:
                     setattr(db_product, key, value)
 
         self.db.commit()
         self.db.refresh(db_product)
+        self.db.refresh(inventory)
+
         return db_product
 
     def delete_product(self, current_user: user_models.User, product_id: int):
