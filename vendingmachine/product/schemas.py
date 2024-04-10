@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class BaseProduct(BaseModel):
@@ -11,10 +11,7 @@ class BaseProduct(BaseModel):
 
 
 class CreateProduct(BaseProduct):
-    pass
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UpdateProduct(BaseModel):
@@ -23,5 +20,5 @@ class UpdateProduct(BaseModel):
     price: Optional[int] = None
     inventory_count: Optional[int] = None
 
-    class Config:
-        from_attributes = True
+    # Class Config
+    model_config = ConfigDict(from_attributes=True)

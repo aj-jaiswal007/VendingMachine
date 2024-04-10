@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from vendingmachine.common.database import AuditBase
 from vendingmachine.user.enums import RoleName
@@ -24,8 +24,8 @@ class UserUpdate(BaseModel):
 class User(UserBase, AuditBase):
     role: RoleName
 
-    class Config:
-        from_attributes = True
+    # config
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Token(BaseModel):

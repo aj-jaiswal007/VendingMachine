@@ -24,7 +24,7 @@ app.include_router(engine_routes.authenticated_routes)
 
 
 @app.exception_handler(InvalidOperation)
-async def validation_exception_handler(request: Request, exc: InvalidOperation):
+def validation_exception_handler(request: Request, exc: InvalidOperation):
     raise HTTPException(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         detail=str(exc),
