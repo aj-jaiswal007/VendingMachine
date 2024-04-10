@@ -67,7 +67,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"first_name\": \"Amar\",\n    \"last_name\": \"Jaiswal\",\n    \"username\": \"amar\",\n    \"password\": \"amar\"\n}",
+							"raw": "{\n    \"first_name\": \"Ajay\",\n    \"last_name\": \"Jaiswal\",\n    \"username\": \"ajay\",\n    \"password\": \"ajay\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -302,7 +302,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\n    \"inventory_count\": 2\n}",
+							"raw": "{\n\n    \"inventory_count\": 3\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -310,13 +310,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/products/8",
+							"raw": "{{url}}/products/1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"products",
-								"8"
+								"1"
 							]
 						}
 					},
@@ -372,7 +372,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"coin_type\": \"TWENTY\",\n    \"quantity\": 1\n}",
+							"raw": "{\n    \"coin_type\": \"TEN\",\n    \"quantity\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -386,6 +386,45 @@
 							],
 							"path": [
 								"deposit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deposit Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"coin_type\": \"TWENTY\",\n    \"quantity\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/check_register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"check_register"
 							]
 						}
 					},
@@ -408,7 +447,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"product_id\": 6,\n    \"quantity\": 1\n}",
+							"raw": "{\n    \"product_id\": 1,\n    \"quantity\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"

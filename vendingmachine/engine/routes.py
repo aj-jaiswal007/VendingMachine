@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 
 from vendingmachine.user import models as user_models
 from vendingmachine.user.authentication import get_current_active_user
-from vendingmachine.user.permission import allow_buyer
+from vendingmachine.user.permission import allow_buyer, allow_seller
 
 from . import schemas
 from .machine import VendingMachine, get_machine
@@ -45,3 +45,11 @@ def reset(
     vending_machine: Annotated[VendingMachine, Depends(get_machine)],
 ):
     return vending_machine.reset(current_user=current_user)
+
+
+@authenticated_routes.get("/check_register", dependencies=[Depends(allow_seller)])
+def check_register(
+    current_user: Annotated[user_models.User, Depends(get_current_active_user)],
+    vending_machine: Annotated[VendingMachine, Depends(get_machine)],
+):
+    return vending_machine.cash_register.coins
