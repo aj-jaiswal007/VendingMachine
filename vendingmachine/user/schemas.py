@@ -22,6 +22,8 @@ class UserUpdate(BaseModel):
 
 
 class User(UserBase, AuditBase):
+    role: RoleName
+
     class Config:
         from_attributes = True
 
