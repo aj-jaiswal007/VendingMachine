@@ -64,7 +64,7 @@ class CoinCount(BaseModel):
 
         # Calculate the change starting from the highest denomination
         # and moving down to the lowest denomination
-        for denomination, count in sorted(count_count.model_dump().items(), reverse=True):
+        for denomination, count in sorted(count_count.model_dump().items(), reverse=True, key=lambda x: values[x[0]]):
             den_value = values[denomination]
             while total >= den_value and count > 0:
                 setattr(result, denomination, getattr(result, denomination) + 1)
