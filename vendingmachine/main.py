@@ -1,7 +1,9 @@
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request, status
 
 from vendingmachine import heartbeat
+from vendingmachine.engine import routes as engine_routes
+from vendingmachine.engine.exceptions import InvalidOperation
 from vendingmachine.product import routes as product_routes
 from vendingmachine.user import routes as user_routes
 
@@ -18,3 +20,12 @@ app.include_router(heartbeat.router)
 app.include_router(user_routes.public_routes)
 app.include_router(user_routes.authenticated_routes)
 app.include_router(product_routes.authenticated_routes)
+app.include_router(engine_routes.authenticated_routes)
+
+
+@app.exception_handler(InvalidOperation)
+async def validation_exception_handler(request: Request, exc: InvalidOperation):
+    raise HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        detail=str(exc),
+    )

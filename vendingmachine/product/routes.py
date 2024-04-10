@@ -31,7 +31,6 @@ def create_product(
     current_user: Annotated[user_models.User, Depends(get_current_active_user)],
     product_manager: Annotated[ProductManager, Depends(ProductManager)],
 ):
-    # Create a new product.
     return product_manager.create_product(product=product, created_by=current_user.id)  # type: ignore
 
 
