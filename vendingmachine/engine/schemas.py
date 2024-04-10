@@ -6,11 +6,6 @@ from .enums import CoinType
 from .exceptions import InvalidOperation
 
 
-class ChangeResponse(BaseModel):
-    message: str
-    change: int
-
-
 class DepositRequest(BaseModel):
     coin_type: CoinType
     quantity: int
@@ -32,7 +27,7 @@ class CoinCount(BaseModel):
     def total(self):
         return self.five * 5 + self.ten * 10 + self.twenty * 20 + self.fifty * 50 + self.hundred * 100
 
-    def add_coin(self, coin_type: CoinType, quantity: int):
+    def add(self, coin_type: CoinType, quantity: int):
         if coin_type == CoinType.FIVE:
             self.five += quantity
         elif coin_type == CoinType.TEN:
@@ -115,7 +110,7 @@ class DepositResponse(DepositRequest):
 
 class ResetResponse(BaseModel):
     message: str
-    change: CoinCount
+    change: Optional[CoinCount] = None
 
 
 class BuyResponse(BaseModel):

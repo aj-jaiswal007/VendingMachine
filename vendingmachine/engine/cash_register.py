@@ -2,11 +2,18 @@ from functools import lru_cache
 
 from vendingmachine.common.singleton import Singleton
 
+from .defaults import DEFAULT_CASH, CoinType
 from .schemas import CoinCount
 
 
 class CashRegister(metaclass=Singleton):
-    coins = CoinCount(five=0, ten=0, twenty=0, fifty=0, hundred=0)
+    coins = CoinCount(
+        five=DEFAULT_CASH[CoinType.FIVE],
+        ten=DEFAULT_CASH[CoinType.TEN],
+        twenty=DEFAULT_CASH[CoinType.TWENTY],
+        fifty=DEFAULT_CASH[CoinType.FIFTY],
+        hundred=DEFAULT_CASH[CoinType.HUNDRED],
+    )
 
     def check_if_change_possible(self, coins_deposited: CoinCount, amount_to_change: int) -> bool:
         temp_total = CoinCount(

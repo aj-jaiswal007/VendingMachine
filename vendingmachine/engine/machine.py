@@ -59,13 +59,13 @@ class VendingMachine(metaclass=Singleton):
         )
 
     def reset(self, current_user: models.User) -> schemas.ResetResponse:
+        self.state.on_reset(current_user)
         # dispense coins if any
-        coins_to_dispense = self.state.on_dispense_coin(current_user)
-
+        dispensed_coins = self.state.on_dispense_coin(current_user)
         # Returning
         return schemas.ResetResponse(
             message="Machine reset successfully.",
-            change=coins_to_dispense,
+            change=dispensed_coins,
         )
 
 

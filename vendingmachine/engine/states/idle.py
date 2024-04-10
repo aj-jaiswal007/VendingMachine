@@ -26,7 +26,7 @@ class IdleState(BaseState):
             schemas.DepositResponse: _description_
         """
         logger.info(f"Depositing money. {deposit_request}")
-        self.vm.coins_deposited.add_coin(deposit_request.coin_type, deposit_request.quantity)
+        self.vm.coins_deposited.add(deposit_request.coin_type, deposit_request.quantity)
         self.vm.in_use_by = current_user
         self.vm.set_state(BuyingState(self.vm))
 

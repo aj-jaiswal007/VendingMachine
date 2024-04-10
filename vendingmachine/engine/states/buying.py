@@ -1,3 +1,4 @@
+from vendingmachine.common.logger import logger
 from vendingmachine.user import models as user_models
 
 from .. import schemas
@@ -17,7 +18,8 @@ class BuyingState(BaseState):
             schemas.DepositResponse: _description_
         """
         self._validate_current_user(current_user)
-        self.vm.coins_deposited.add_coin(deposit_request.coin_type, deposit_request.quantity)
+        logger.info(f"Depositing money. {deposit_request}")
+        self.vm.coins_deposited.add(deposit_request.coin_type, deposit_request.quantity)
 
     def on_buy(self, current_user: user_models.User, buy_request: schemas.BuyRequest) -> int:
         # Buy the product
@@ -28,23 +30,26 @@ class BuyingState(BaseState):
             raise InvalidOperation("Product not found")
 
         # Check if the product is available
-        if product.inventory.quantity < buy_request.quantity:
+        product_inventory = self.vm.product_manager.get_product_inventory(product_id=buy_request.product_id)
+        if product_inventory.quantity < buy_request.quantity:  # type: ignore
             raise InvalidOperation(
-                f"We have only {product.inventory.quantity} units of {product.name} left. Order less quantity."
+                f"We have only {product_inventory.quantity} units of {product.name} left. Order less quantity."
             )
 
         # Check the total price is less than or equal to the total deposited
         total_price: int = product.price * buy_request.quantity  # type: ignore
         total_deposited = self.vm.coins_deposited.total
         if total_price > total_deposited:
-            raise InvalidOperation("Insufficient funds")
+            raise InvalidOperation("Insufficient funds add more money or reset to collect your money.")
 
         # Check if change is possible to return
         amount_to_change: int = total_deposited - total_price  # type: ignore
-        self.vm.cash_register.check_if_change_possible(
+        is_change_possible = self.vm.cash_register.check_if_change_possible(
             coins_deposited=self.vm.coins_deposited,
             amount_to_change=amount_to_change,
         )
+        if not is_change_possible:
+            raise InvalidOperation("Cannot return change. Please add exact amount or reset to collect your money.")
 
         # All is good we may move to product dispensing state now
         from .dispense_product import DispenseProductState
@@ -55,11 +60,13 @@ class BuyingState(BaseState):
         return total_price
 
     def on_reset(self, current_user: user_models.User):
-        # Moving to idle state
+        # Flush the coins collected
         self._validate_current_user(current_user)
-        from .idle import IdleState
+        self.vm.coins_to_dispense = self.vm.coins_deposited
+        self.vm.coins_deposited = schemas.CoinCount()
+        from .dispense_cash import DispenseCashState
 
-        self.vm.set_state(IdleState(self.vm))
+        self.vm.set_state(DispenseCashState(self.vm))
 
     def on_dispense_coin(self, current_user: user_models.User):
         raise InvalidOperation("Cannot dispense coins in this state.")

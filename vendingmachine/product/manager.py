@@ -32,6 +32,13 @@ class ProductManager(BaseManager):
 
         return p
 
+    def get_product_inventory(self, product_id: int):
+        inventory = self.db.query(models.Inventory).filter(models.Inventory.product_id == product_id).first()
+        if not inventory:
+            raise HTTPException(status_code=404, detail="Inventory not found")
+
+        return inventory
+
     def update_product(
         self,
         current_user: user_models.User,

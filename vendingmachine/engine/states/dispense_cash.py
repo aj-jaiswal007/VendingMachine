@@ -14,7 +14,7 @@ class DispenseCashState(BaseState):
         raise InvalidOperation("I am dispensing money now, You cannot add any money.")
 
     def on_reset(self, current_user: User):
-        raise InvalidOperation("I am dispensing money now, You cannot reset me.")
+        raise InvalidOperation("I am dispensing cash now, You cannot reset me.")
 
     def on_dispense_product(self, current_user: User, product_id: int, quantity: int):
         raise InvalidOperation("I am dispensing cash now, You cannot buy anything.")
