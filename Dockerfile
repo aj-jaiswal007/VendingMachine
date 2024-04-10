@@ -11,11 +11,9 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 # copiyfing our code
-COPY ./alembic /code/alembic
 COPY ./vendingmachine /code/vendingmachine
 
-# Change the working directory to /code
-WORKDIR /code
+
 
 # running server
 CMD ["uvicorn", "vendingmachine.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8080"]

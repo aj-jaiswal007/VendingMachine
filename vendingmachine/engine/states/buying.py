@@ -40,6 +40,7 @@ class BuyingState(BaseState):
         total_price: int = product.price * buy_request.quantity  # type: ignore
         total_deposited = self.vm.coins_deposited.total
         if total_price > total_deposited:
+            logger.info(f"Total price: {total_price}, Total deposited: {total_deposited}")
             raise InvalidOperation("Insufficient funds add more money or reset to collect your money.")
 
         # Check if change is possible to return
