@@ -13,5 +13,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # copiyfing our code
 COPY ./vendingmachine /code/vendingmachine
 
+
+
 # running server
 CMD ["uvicorn", "vendingmachine.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8080"]

@@ -1,8 +1,8 @@
-"""Initial migration
+"""Fresh DB
 
-Revision ID: a31f6f354484
-Revises: 12cc8ef40f8d
-Create Date: 2024-04-08 00:51:08.583033
+Revision ID: 612f060ef316
+Revises:
+Create Date: 2024-04-10 13:05:21.507476
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "a31f6f354484"
-down_revision: Union[str, None] = "12cc8ef40f8d"
+revision: str = "612f060ef316"
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -43,10 +43,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=True),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["created_by"],
-            ["vm_users.id"],
-        ),
+        sa.ForeignKeyConstraint(["created_by"], ["vm_users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
@@ -56,11 +53,9 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=True),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["product_id"],
-            ["vm_product.id"],
-        ),
+        sa.ForeignKeyConstraint(["product_id"], ["vm_product.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("product_id"),
     )
     # ### end Alembic commands ###
 

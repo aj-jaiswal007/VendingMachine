@@ -56,40 +56,26 @@ class CoinCount(BaseModel):
         self.hundred -= coins.hundred
 
     def get_denomination_for_amount(self, amount: int) -> "CoinCount":
-        hundred_count = self.hundred
-        fifty_count = self.fifty
-        twenty_count = self.twenty
-        ten_count = self.ten
-        five_count = self.five
+        count_count = self.model_copy()
+        total = amount
+        result = CoinCount()
 
-        denomination = CoinCount()
-        # Greedy algorithm to get the denomination
-        # Raise InsufficientFunds if not possible
-        while amount > 0:
-            if amount >= 100 and hundred_count > 0:
-                amount -= 100
-                hundred_count -= 1
-                denomination.hundred += 1
-            elif amount >= 50 and fifty_count > 0:
-                amount -= 50
-                fifty_count -= 1
-                denomination.fifty += 1
-            elif amount >= 20 and twenty_count > 0:
-                amount -= 20
-                twenty_count -= 1
-                denomination.twenty += 1
-            elif amount >= 10 and ten_count > 0:
-                amount -= 10
-                ten_count -= 1
-                denomination.ten += 1
-            elif amount >= 5 and five_count > 0:
-                amount -= 5
-                five_count -= 1
-                denomination.five += 1
-            else:
-                raise InvalidOperation("Insufficient funds to return change.")
+        values = {"five": 5, "ten": 10, "twenty": 20, "fifty": 50, "hundred": 100}
 
-        return denomination
+        # Calculate the change starting from the highest denomination
+        # and moving down to the lowest denomination
+        for denomination, count in sorted(count_count.model_dump().items(), reverse=True):
+            den_value = values[denomination]
+            while total >= den_value and count > 0:
+                setattr(result, denomination, getattr(result, denomination) + 1)
+                total -= den_value
+                count -= 1
+
+        # If total is not zero, it means we couldn't make up the change
+        if total != 0:
+            raise InvalidOperation("Insufficient funds to return change.")
+
+        return result
 
     def check_if_change_possible(self, amount: int) -> bool:
         if self.total < amount:
