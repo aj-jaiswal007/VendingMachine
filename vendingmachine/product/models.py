@@ -9,7 +9,7 @@ class Product(AuditMixin, Base):
     created_by = mapped_column(Integer, ForeignKey("vm_users.id", ondelete="CASCADE"))
     name = Column(String)
     description = Column(String)
-    price = Column(Float)
+    price = Column(Integer)
 
 
 class Inventory(AuditMixin, Base):
