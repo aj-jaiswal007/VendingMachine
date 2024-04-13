@@ -26,7 +26,12 @@ class ProductManager(BaseManager):
         return self.db.query(models.Product).options(selectinload(models.Product.inventory)).all()
 
     def get_product(self, product_id: int):
-        p = self.db.query(models.Product).filter(models.Product.id == product_id).first()
+        p = (
+            self.db.query(models.Product)
+            .filter(models.Product.id == product_id)
+            .options(selectinload(models.Product.inventory))
+            .first()
+        )
         if not p:
             raise HTTPException(status_code=404, detail="Product not found")
 
@@ -64,7 +69,7 @@ class ProductManager(BaseManager):
         self.db.refresh(db_product)
         self.db.refresh(inventory)
 
-        return db_product
+        return self.get_product(product_id)
 
     def delete_product(self, current_user: user_models.User, product_id: int):
         db_product = self.get_product(product_id)

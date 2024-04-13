@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import mapped_column, relationship
 
 from vendingmachine.common.database import AuditMixin, Base
@@ -9,7 +9,7 @@ class Product(AuditMixin, Base):
     created_by = mapped_column(Integer, ForeignKey("vm_users.id", ondelete="CASCADE"))
     name = Column(String)
     description = Column(String)
-    price = Column(Float)
+    price = Column(Integer)
 
 
 class Inventory(AuditMixin, Base):
