@@ -1,7 +1,7 @@
 from vendingmachine.common.singleton import Singleton
 
 
-class RateLimiter(Singleton):
+class RateLimiter(metaclass=Singleton):
     RATE_LIMIT_PER_API_PERMIN = 20
 
     __cache = {}
